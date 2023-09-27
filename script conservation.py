@@ -3,19 +3,21 @@
 
 # COMMAND ----------
 
+# CAlculate the duration on minutes
 def get_file_duration(path):
     modification_time_ms = path.modificationTime
-    modification_time = datetime.fromtimestamp(modification_time_ms / 1000)  # Divide by 1000 to convert milliseconds to datetime
+    modification_time = datetime.fromtimestamp(modification_time_ms / 1000)  # Divide by 1000 to convert milliseconds to minute
     duration = (datetime.now() - modification_time).total_seconds() / 60
     return duration
 
 # COMMAND ----------
 
+# Archive files from the raw directory
 def archived_raw_files(raw_paths):
     for path in raw_paths:
         file_duration = get_file_duration(path)
         # check if the duration 
-        if file_duration >= 15:
+        if file_duration >= 5:
             # get the raw directory
             source_directory = path.path
             # get the archived directory
@@ -24,11 +26,12 @@ def archived_raw_files(raw_paths):
 
 # COMMAND ----------
 
+# Delete the archived files
 def delete_archived_files(archived_paths):
     for path in archived_paths:
         file_duration = get_file_duration(path)
         # check if the duration 
-        if file_duration >= 30:
+        if file_duration >= 10:
             # get the raw directory
             source_directory = path.path
             # get the archived directory
@@ -46,6 +49,7 @@ container_name = "tarifihichamcontainer"
 # get files path
 files_paths = get_file_path(storage_account_name,storage_account_access_key,container_name)
 
+# Execute function to apply the conservation policies
 archived_raw_files(files_paths[0])
 delete_archived_files(files_paths[2])
 
